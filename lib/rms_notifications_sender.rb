@@ -66,7 +66,7 @@ class RmsNotificationsSender
       sourceType = 9
     end
 
-    if check_notification_settings_for(user_id, type)
+    if RmsNotificationsSender.check_notification_settings_for(user_id, type)
       response = RestClient.post(
         url,
         {
@@ -89,9 +89,7 @@ class RmsNotificationsSender
     end
   end
 
-  private
-
-  def check_notification_settings_for(user_id, type=nil)
+  def self.check_notification_settings_for(user_id, type=nil)
     url = "#{Rails.application.secrets.notification_server_url}/profile/setting/notification/#{user_id}"
     response = RestClient.get(url)
     json_response = JSON.parse(response.body)
@@ -100,6 +98,8 @@ class RmsNotificationsSender
     case type
     when "friend_request"
       result = json_response["data"]["isAddFriendNotified"]
+    when "friend_request_email"
+      result = json_response["data"]["isAddFriendEmail"]
     end
     return result == 1
   end
